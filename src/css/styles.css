@@ -1,0 +1,211 @@
+/* ============================================================
+   Connect 4 — styles.css
+   ============================================================ */
+
+/* --- Custom properties ------------------------------------ */
+:root {
+  --p1-color: #e63946;
+  --p2-color: #f4d35e;
+  --empty-color: #f0f0f0;
+  --board-bg: #1d3557;
+  --cell-size: clamp(40px, 8vmin, 80px);
+
+  --drop-duration: 350ms;
+  --win-duration: 600ms;
+}
+
+/* --- Reset / base ----------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* --- Body ------------------------------------------------- */
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 16px;
+  background: #0d1b2a;
+  font-family: system-ui, sans-serif;
+  color: white;
+}
+
+/* --- Status text ------------------------------------------ */
+#status {
+  text-align: center;
+  font-size: 1.4rem;
+  margin: 16px 0;
+  min-height: 2rem;
+  color: white;
+}
+
+/* --- Board ------------------------------------------------ */
+#board {
+  display: grid;
+  grid-template-columns: repeat(7, var(--cell-size));
+  grid-template-rows: repeat(6, var(--cell-size));
+  gap: 4px;
+  background: var(--board-bg);
+  padding: 12px;
+  border-radius: 8px;
+  /* Ensure the board fits on narrow screens */
+  max-width: calc(7 * var(--cell-size) + 6 * 4px + 24px);
+  width: 100%;
+}
+
+/* --- Cells ------------------------------------------------ */
+.cell {
+  width: var(--cell-size);
+  height: var(--cell-size);
+  border-radius: 50%;
+  background: var(--empty-color);
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.cell.player-1 {
+  background: var(--p1-color);
+}
+
+.cell.player-2 {
+  background: var(--p2-color);
+}
+
+/* Column-hover highlight:
+   When any cell in a column is hovered, mark all cells in
+   that same column with .hovered via JS, or rely on the
+   CSS :has() selector below where supported. */
+.cell.hovered {
+  opacity: 0.7;
+}
+
+/* :has()-based column highlight (progressive enhancement) */
+@supports selector(:has(*)) {
+  #board:has(.cell[data-col="0"]:hover) .cell[data-col="0"],
+  #board:has(.cell[data-col="1"]:hover) .cell[data-col="1"],
+  #board:has(.cell[data-col="2"]:hover) .cell[data-col="2"],
+  #board:has(.cell[data-col="3"]:hover) .cell[data-col="3"],
+  #board:has(.cell[data-col="4"]:hover) .cell[data-col="4"],
+  #board:has(.cell[data-col="5"]:hover) .cell[data-col="5"],
+  #board:has(.cell[data-col="6"]:hover) .cell[data-col="6"] {
+    opacity: 0.7;
+  }
+}
+
+/* --- Reset button ----------------------------------------- */
+#reset-btn {
+  background: #457b9d;
+  color: white;
+  padding: 8px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.15s ease;
+}
+
+#reset-btn:hover {
+  background: #335f7a;
+}
+
+#reset-btn:active {
+  background: #274a5e;
+}
+
+/* --- Responsive ------------------------------------------- */
+@media (max-width: 360px) {
+  body {
+    padding: 8px;
+  }
+
+  #status {
+    font-size: 1.1rem;
+  }
+}
+
+/* --- Reduced motion --------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --drop-duration: 0ms;
+    --win-duration: 0ms;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0ms !important;
+  }
+}
+
+/* --- Drop animation --------------------------------------- */
+@keyframes drop-piece {
+  from { transform: translateY(-400px); opacity: 0.6; }
+  to   { transform: translateY(0);      opacity: 1; }
+}
+
+.cell.drop-active {
+  animation: drop-piece var(--drop-duration) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* --- Column hover preview --------------------------------- */
+.cell.col-hover {
+  background: color-mix(in srgb, var(--empty-color) 60%, var(--board-bg) 40%);
+  opacity: 0.85;
+}
+
+/* --- Column indicator ------------------------------------- */
+.col-indicator {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 10px solid var(--empty-color);
+  opacity: 0.75;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+/* Win highlight */
+@keyframes win-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+  50%  { box-shadow: 0 0 0 12px rgba(255, 255, 255, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+}
+
+.cell.winning-cell {
+  animation: win-pulse var(--win-duration) ease-in-out infinite;
+  outline: 3px solid white;
+  outline-offset: -3px;
+  z-index: 1;
+}
+
+/* Winner / Draw banners */
+#status.status-won {
+  color: #f4d35e;
+  font-weight: bold;
+  font-size: 1.6rem;
+}
+
+#status.status-draw {
+  color: #a8dadc;
+  font-weight: bold;
+}
+
+/* Draw state */
+.board-disabled {
+  pointer-events: none;
+  opacity: 0.85;
+}
