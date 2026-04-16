@@ -1,0 +1,56 @@
+# ---- OS (macOS) ----
+
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# ---- IntelliJ IDEA ----
+
+.idea/
+*.iml
+*.iws
+out/
+
+# ---- Logs ----
+
+*.log
+
+# ---- Environment / Secrets ----
+
+.env
+.env.*
+*.local
+
+# ---- Node (only if you ever add tooling) ----
+
+node_modules/
+dist/
+build/
+
+# ---- Coverage / Testing ----
+
+coverage/
+.nyc_output/
+
+# ---- Temporary files ----
+
+tmp/
+temp/
+*.tmp
+*.swp
+*.swo
+*~
+
+# ---- AI / Tooling (defensive) ----
+
+.claude/
+.claude-cache/
+.ai/
+.cache/
+
+# ---- Misc ----
+
+.vscode/
+*.bak
